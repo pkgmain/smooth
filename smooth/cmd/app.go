@@ -13,6 +13,8 @@ import (
 	"github.com/pkgmain/smooth/smooth/templates"
 )
 
+var infoWriter = InfoWriter{}
+
 var appCmd = &cobra.Command{
 	Use:   "app [module name]",
 	Short: "Scaffold a new application",
@@ -32,18 +34,20 @@ var appCmd = &cobra.Command{
 		}
 
 		// run go mod init
+		log.Info().Msgf("running: go mod init %s", module)
 		err = execCommand(app, "go", "mod", "init", module)
 		if err != nil {
 			return err
 		}
 
 		// run go get
+		log.Info().Msg("running: go get")
 		err = execCommand(app, "go", "get")
 		if err != nil {
 			return err
 		}
 
-		log.Info().Msg("Finished scaffolding application!")
+		log.Info().Msgf("Finished scaffolding! Your application is now available in ./%s", app)
 
 		return nil
 	},
@@ -62,16 +66,12 @@ func writeFilesFromTemplates(m templates.AppModel) {
 }
 
 func getModule(args []string) string {
-	m := args[0]
-	log.Info().Msgf("Module: %s", m)
-
-	return m
+	return args[0]
 }
 
 func getApp(module string) string {
 	tokens := strings.Split(module, "/")
 	app := tokens[len(tokens)-1]
-	log.Info().Msgf("App: %s", app)
 
 	return app
 }
@@ -79,8 +79,8 @@ func getApp(module string) string {
 func execCommand(workingDir, name string, args ...string) error {
 	cmd := exec.Command(name, args...)
 	cmd.Dir = workingDir
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
+	cmd.Stdout = infoWriter
+	cmd.Stderr = infoWriter
 
 	err := cmd.Run()
 	if err != nil {
@@ -88,4 +88,11 @@ func execCommand(workingDir, name string, args ...string) error {
 	}
 
 	return nil
+}
+
+type InfoWriter struct{}
+
+func (InfoWriter) Write(p []byte) (n int, err error) {
+	log.Info().Msg(string(p))
+	return len(p), nil
 }
