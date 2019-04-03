@@ -5,6 +5,8 @@ import (
 
 	"github.com/go-chi/chi"
 	"github.com/gobuffalo/pop"
+
+	"{{.Module}}/config"
 )
 
 func Start(db *pop.Connection) error {
@@ -13,5 +15,5 @@ func Start(db *pop.Connection) error {
 	middleware(r, db)
 	routes(r)
 
-	return http.ListenAndServe(":3000", r)
+	return http.ListenAndServe(":"+config.Port, r)
 }
