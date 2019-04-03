@@ -31,6 +31,12 @@ var appCmd = &cobra.Command{
 			return err
 		}
 
+		// run go mod init
+		err = execCommand(app, "go", "mod", "init", module)
+		if err != nil {
+			return err
+		}
+
 		// run go get
 		err = execCommand(app, "go", "get")
 		if err != nil {
