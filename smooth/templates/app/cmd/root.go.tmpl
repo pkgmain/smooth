@@ -6,8 +6,8 @@ import (
 )
 
 var rootCmd = &cobra.Command{
-	Use:   "myapp",
-	Short: "An app build with Ermac",
+	Use:   "{{.App}}",
+	Short: "An app build with Smooth",
 }
 
 func Execute() {
