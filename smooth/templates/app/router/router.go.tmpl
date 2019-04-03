@@ -5,6 +5,7 @@ import (
 
 	"github.com/go-chi/chi"
 	"github.com/gobuffalo/pop"
+	"github.com/rs/zerolog/log"
 
 	"{{.Module}}/config"
 )
@@ -15,5 +16,6 @@ func Start(db *pop.Connection) error {
 	middleware(r, db)
 	routes(r)
 
+	log.Info().Msgf("Server listening on port %s...", config.Port)
 	return http.ListenAndServe(":"+config.Port, r)
 }
