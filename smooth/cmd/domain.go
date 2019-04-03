@@ -14,7 +14,7 @@ import (
 
 var domainCmd = &cobra.Command{
 	Use:   "domain [name]",
-	Short: "Scaffold a new domain",
+	Short: "Scaffold a new domain. This includes code for the domain, migrations, CRUD http handlers and repos.",
 	Args:  cobra.ExactArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
 		_, err := ioutil.ReadFile("go.mod")
@@ -27,6 +27,8 @@ var domainCmd = &cobra.Command{
 }
 
 func createDomain(domain string) error {
+	log.Info().Msg("Scaffolding new domain...")
+
 	domain = strings.ToLower(domain)
 	m := templates.DomainModel{
 		Singular:    domain,
@@ -44,6 +46,7 @@ func createDomain(domain string) error {
 		log.Fatal().Msgf("%+v", err)
 	}
 
+	log.Info().Msg("Finished scaffolding domain!")
 	return nil
 }
 
