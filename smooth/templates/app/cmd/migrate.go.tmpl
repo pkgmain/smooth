@@ -1,0 +1,59 @@
+package cmd
+
+import (
+	"github.com/spf13/cobra"
+
+	"{{.Module}}/store"
+)
+
+var migrateCmd = &cobra.Command{
+	Use:   "migrate",
+	Short: "migrate the database up or down",
+}
+
+var upCmd = &cobra.Command{
+	Use:   "up",
+	Short: "migrate database up",
+	RunE:  migrateUp,
+}
+
+var downCmd = &cobra.Command{
+	Use:   "down",
+	Short: "migrate the database down 1 step",
+	RunE:  migrateDown,
+}
+
+func init() {
+	rootCmd.AddCommand(migrateCmd)
+
+	migrateCmd.AddCommand(upCmd)
+	migrateCmd.AddCommand(downCmd)
+}
+
+func migrateUp(cmd *cobra.Command, args []string) error {
+	db, err := store.DB()
+	if err != nil {
+		return err
+	}
+
+	m, err := store.NewMigrator(db)
+	if err != nil {
+		return err
+	}
+
+	return m.Up()
+}
+
+func migrateDown(cmd *cobra.Command, args []string) error {
+	db, err := store.DB()
+	if err != nil {
+		return err
+	}
+
+	m, err := store.NewMigrator(db)
+	if err != nil {
+		return err
+	}
+
+	return m.Down()
+}

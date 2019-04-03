@@ -1,0 +1,94 @@
+package {{.Singular}}
+
+import (
+	"net/http"
+
+	"github.com/go-chi/render"
+	"github.com/pkgmain/smooth"
+)
+
+func Post(w http.ResponseWriter, r *http.Request) {
+	{{.Singular}} := new({{.Capitalized}})
+	err := render.Bind(r, {{.Singular}})
+	if err != nil {
+		smooth.RenderJSONError(w, r, err)
+		return
+	}
+
+	err = Create({{.Singular}}, smooth.GetTX(r))
+	if err != nil {
+		smooth.RenderJSONError(w, r, err)
+		return
+	}
+
+	smooth.RenderJSONWithStatus(w, r, http.StatusCreated, {{.Singular}})
+}
+
+func Get(w http.ResponseWriter, r *http.Request) {
+	hasID := smooth.HasParam(r, "id")
+	if hasID {
+		getOne(w, r)
+		return
+	}
+
+	getAll(w, r)
+}
+
+func Put(w http.ResponseWriter, r *http.Request) {
+	{{.Singular}} := new({{.Capitalized}})
+	err := render.Bind(r, {{.Singular}})
+	if err != nil {
+		smooth.RenderJSONError(w, r, err)
+		return
+	}
+
+	err = Update({{.Singular}}, smooth.GetTX(r))
+	if err != nil {
+		smooth.RenderJSONError(w, r, err)
+		return
+	}
+
+	smooth.RenderJSON(w, r, {{.Singular}})
+}
+
+func Delete(w http.ResponseWriter, r *http.Request) {
+	id, errs := smooth.GetUUIDFromPath(r, "id")
+	if errs != nil && errs.HasAny() {
+		smooth.RenderBadRequest(w, r, errs)
+		return
+	}
+
+	err := Destroy(id, smooth.GetTX(r))
+	if err != nil {
+		smooth.RenderJSONError(w, r, err)
+		return
+	}
+
+	render.Status(r, http.StatusNoContent)
+}
+
+func getOne(w http.ResponseWriter, r *http.Request) {
+	id, errs := smooth.GetUUIDFromPath(r, "id")
+	if errs != nil && errs.HasAny() {
+		smooth.RenderBadRequest(w, r, errs)
+		return
+	}
+
+	u, err := FindOne(id, smooth.GetTX(r))
+	if err != nil {
+		smooth.RenderJSONError(w, r, err)
+	}
+
+	smooth.RenderJSON(w, r, u)
+}
+
+func getAll(w http.ResponseWriter, r *http.Request) {
+	tx := smooth.GetTX(r)
+	{{.Plural}}, err := FindAll(tx)
+	if err != nil {
+		smooth.RenderJSONError(w, r, err)
+		return
+	}
+
+	smooth.RenderJSON(w, r, {{.Plural}})
+}

@@ -1,0 +1,17 @@
+package router
+
+import (
+	"net/http"
+
+	"github.com/go-chi/chi"
+	"github.com/gobuffalo/pop"
+)
+
+func Start(db *pop.Connection) error {
+	r := chi.NewRouter()
+
+	middleware(r, db)
+	routes(r)
+
+	return http.ListenAndServe(":3000", r)
+}

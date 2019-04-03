@@ -1,0 +1,11 @@
+package root
+
+import (
+	"net/http"
+
+	"github.com/pkgmain/smooth"
+)
+
+func Get(w http.ResponseWriter, r *http.Request) {
+	smooth.RenderJSON(w, r, map[string]string{"message": "Welcome to Smooth"})
+}

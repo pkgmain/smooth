@@ -1,0 +1,47 @@
+package store
+
+import (
+	"github.com/gobuffalo/pop"
+	"github.com/pkg/errors"
+)
+
+type PopMigrator struct {
+	fm pop.FileMigrator
+}
+
+func NewMigrator(conn *pop.Connection) (m PopMigrator, _ error) {
+	fm, err := pop.NewFileMigrator("./migrations", conn)
+	if err != nil {
+		return m, err
+	}
+
+	return PopMigrator{fm}, nil
+}
+
+func (m PopMigrator) Up() error {
+	err := m.fm.Up()
+	if err != nil {
+		return err
+	}
+
+	err = m.fm.Status()
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (m PopMigrator) Down() error {
+	err := m.fm.Down(1)
+	if err != nil {
+		return errors.WithStack(err)
+	}
+
+	err = m.fm.Status()
+	if err != nil {
+		return err
+	}
+
+	return nil
+}

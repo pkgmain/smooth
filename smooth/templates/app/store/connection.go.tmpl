@@ -1,0 +1,34 @@
+package store
+
+import (
+	"{{.Module}}/config"
+
+	"github.com/gobuffalo/pop"
+)
+
+var (
+	db *pop.Connection
+)
+
+func DB() (*pop.Connection, error) {
+	if db != nil {
+		return db, nil
+	}
+
+	err := connect()
+	if err != nil {
+		return nil, err
+	}
+
+	return db, nil
+}
+
+func connect() error {
+	var err error
+	db, err = pop.Connect(config.Env)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}

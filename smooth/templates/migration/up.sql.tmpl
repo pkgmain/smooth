@@ -1,0 +1,6 @@
+create table {{.Plural}}
+(
+    id         uuid                        not null primary key,
+    created_at timestamp without time zone not null,
+    updated_at timestamp without time zone not null
+);

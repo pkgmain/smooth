@@ -1,0 +1,12 @@
+package config
+
+import (
+	"github.com/rs/zerolog"
+	"github.com/rs/zerolog/log"
+)
+
+func init() {
+	if IsDev() {
+		log.Logger = log.Output(zerolog.NewConsoleWriter())
+	}
+}

@@ -1,0 +1,18 @@
+package cmd
+
+import (
+	"github.com/rs/zerolog/log"
+	"github.com/spf13/cobra"
+)
+
+var rootCmd = &cobra.Command{
+	Use:   "myapp",
+	Short: "An app build with Ermac",
+}
+
+func Execute() {
+	err := rootCmd.Execute()
+	if err != nil {
+		log.Fatal().Msgf("%+v", err)
+	}
+}

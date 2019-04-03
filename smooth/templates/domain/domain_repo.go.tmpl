@@ -1,0 +1,51 @@
+package {{.Singular}}
+
+import (
+	"database/sql"
+
+	"github.com/gobuffalo/pop"
+	"github.com/gobuffalo/uuid"
+	"github.com/pkg/errors"
+)
+
+func Create({{.Singular}} *{{.Capitalized}}, tx *pop.Connection) error {
+	return tx.Create({{.Singular}})
+}
+
+func FindOne(id uuid.UUID, tx *pop.Connection) (*{{.Capitalized}}, error) {
+	{{.Singular}} := new({{.Capitalized}})
+	err := tx.Find({{.Singular}}, id)
+	if err != nil {
+		return nil, err
+	}
+
+	return {{.Singular}}, nil
+}
+
+func FindAll(tx *pop.Connection) ([]{{.Capitalized}}, error) {
+	{{.Plural}} := []{{.Capitalized}}{}
+	err := tx.All(&{{.Plural}})
+	if err != nil {
+		return nil, err
+	}
+
+	return {{.Plural}}, err
+}
+
+func Update({{.Singular}} *{{.Capitalized}}, tx *pop.Connection, excludeColumns ...string) error {
+	return tx.Update({{.Singular}}, excludeColumns...)
+}
+
+func Destroy(id uuid.UUID, tx *pop.Connection) error {
+	q := tx.RawQuery("delete from {{.Plural}} where id = ?", id)
+	rowsAffected, err := q.ExecWithCount()
+	if err != nil {
+		return err
+	}
+
+	if rowsAffected < 1 {
+		return errors.WithStack(sql.ErrNoRows)
+	}
+
+	return nil
+}

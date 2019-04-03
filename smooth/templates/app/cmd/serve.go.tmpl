@@ -1,0 +1,43 @@
+package cmd
+
+import (
+	"github.com/spf13/cobra"
+
+	"{{.Module}}/config"
+	"{{.Module}}/router"
+	"{{.Module}}/store"
+)
+
+var serveCmd = &cobra.Command{
+	Use:   "serve",
+	Short: "start the server",
+	RunE: func(cmd *cobra.Command, args []string) error {
+		db, err := store.DB()
+		if err != nil {
+			return err
+		}
+
+		if config.IsDev() {
+			m, err := store.NewMigrator(db)
+			if err != nil {
+				return err
+			}
+
+			err = m.Up()
+			if err != nil {
+				return err
+			}
+		}
+
+		err = router.Start(db)
+		if err != nil {
+			return err
+		}
+
+		return nil
+	},
+}
+
+func init() {
+	rootCmd.AddCommand(serveCmd)
+}

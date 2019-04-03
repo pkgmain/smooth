@@ -1,0 +1,11 @@
+package router
+
+import (
+	"github.com/go-chi/chi"
+
+	"{{.Module}}/root"
+)
+
+func routes(r *chi.Mux) {
+	r.Get("/", root.Get)
+}
