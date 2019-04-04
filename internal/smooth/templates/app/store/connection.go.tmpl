@@ -4,12 +4,15 @@ import (
 	"{{.Module}}/config"
 
 	"github.com/gobuffalo/pop"
+	"github.com/pkgmain/smooth"
 )
 
 var (
 	db *pop.Connection
 )
 
+// DB returns an existing *pop.Connection. If a connection has not yet been made,
+// a new one will be established.
 func DB() (*pop.Connection, error) {
 	if db != nil {
 		return db, nil
@@ -24,6 +27,9 @@ func DB() (*pop.Connection, error) {
 }
 
 func connect() error {
+	pop.SetLogger(smooth.ZeroPopLogger)
+	pop.Debug = config.IsDev()
+
 	var err error
 	db, err = pop.Connect(config.Env)
 	if err != nil {

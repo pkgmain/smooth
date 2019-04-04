@@ -10,7 +10,7 @@ import (
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/cobra"
 
-	"github.com/pkgmain/smooth/smooth/templates"
+	"github.com/pkgmain/smooth/internal/smooth/templates"
 )
 
 var infoWriter = InfoWriter{}
