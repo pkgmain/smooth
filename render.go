@@ -31,19 +31,18 @@ func RenderBadRequest(w http.ResponseWriter, r *http.Request, errs *validate.Err
 	render.JSON(w, r, errs)
 }
 
-// RenderJSONError logs an error from err. If the err's cause is sql.ErrNoRows,
-// it will render a status code of http.StatusNotFound and the corresponding
-// http#StatusText. Otherwise, it will render the cause of the error with a
-// status code of http.StatusInternalServerError.
+// RenderJSONError, by default, verbosely error logs err and renders the
+// cause of the error with a status code of http.StatusInternalServerError.
+// However, if the err's cause is sql.ErrNoRows, it will render a status code
+// of http.StatusNotFound and the corresponding http#StatusText.
 func RenderJSONError(w http.ResponseWriter, r *http.Request, err error) {
-	log.Error().Msgf("%+v", err)
-
 	if errors.Cause(err) == sql.ErrNoRows {
 		render.Status(r, http.StatusNotFound)
 		render.JSON(w, r, http.StatusText(http.StatusNotFound))
 		return
 	}
 
+	log.Error().Msgf("%+v", err)
 	render.Status(r, http.StatusInternalServerError)
 	render.JSON(w, r, errors.Cause(err).Error())
 }
