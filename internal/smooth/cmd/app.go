@@ -47,7 +47,12 @@ var appCmd = &cobra.Command{
 			return err
 		}
 
-		log.Info().Msgf("Finished scaffolding! Your application is now available in ./%s", app)
+		absPath, err := filepath.Abs(app)
+		if err != nil {
+			return err
+		}
+
+		log.Info().Msgf("Finished scaffolding! Your application is now available in %s", absPath)
 
 		return nil
 	},
