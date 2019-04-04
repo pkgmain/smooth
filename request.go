@@ -4,9 +4,14 @@ import (
 	"net/http"
 
 	"github.com/go-chi/chi"
+	"github.com/gobuffalo/pop"
 	"github.com/gobuffalo/uuid"
 	"github.com/gobuffalo/validate"
 )
+
+func GetTX(r *http.Request) *pop.Connection {
+	return r.Context().Value("tx").(*pop.Connection)
+}
 
 func HasParam(r *http.Request, key string) bool {
 	return chi.URLParam(r, key) != ""

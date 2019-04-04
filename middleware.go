@@ -30,6 +30,4 @@ func PopTXMiddleware(conn *pop.Connection) func(next http.Handler) http.Handler 
 	}
 }
 
-func GetTX(r *http.Request) *pop.Connection {
-	return r.Context().Value("tx").(*pop.Connection)
-}
+
