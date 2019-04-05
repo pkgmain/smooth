@@ -26,10 +26,11 @@ type AppModel struct {
 }
 
 type DomainModel struct {
-	Capitalized string
-	Singular    string
-	Plural      string
-	FirstLetter string
+	Capitalized       string
+	CapitalizedPlural string
+	Singular          string
+	Plural            string
+	FirstLetter       string
 }
 
 func init() {

@@ -30,11 +30,13 @@ func createDomain(domain string) error {
 	log.Info().Msg("Scaffolding new domain...")
 
 	domain = strings.ToLower(domain)
+	plural := inflect.Pluralize(domain)
 	m := templates.DomainModel{
-		Singular:    domain,
-		Plural:      inflect.Pluralize(domain),
-		Capitalized: strings.Title(domain),
-		FirstLetter: domain[0:1],
+		Singular:          domain,
+		Plural:            plural,
+		Capitalized:       strings.Title(domain),
+		CapitalizedPlural: strings.Title(plural),
+		FirstLetter:       domain[0:1],
 	}
 	err := templates.GenerateDomainFiles(m)
 	if err != nil {

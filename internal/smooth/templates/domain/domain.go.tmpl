@@ -7,6 +7,7 @@ import (
 	"github.com/gobuffalo/pop"
 	"github.com/gobuffalo/uuid"
 	"github.com/gobuffalo/validate"
+	"github.com/pkgmain/smooth/paging"
 )
 
 type {{.Capitalized}} struct {
@@ -21,4 +22,15 @@ func ({{.FirstLetter}} {{.Capitalized}}) Bind(r *http.Request) error {
 
 func ({{.FirstLetter}} {{.Capitalized}}) Validate(tx *pop.Connection) (*validate.Errors, error) {
 	return validate.NewErrors(), nil
+}
+
+type {{.CapitalizedPlural}} []{{.Capitalized}}
+
+func ({{.FirstLetter}} {{.CapitalizedPlural}}) ToPage(paginator *pop.Paginator) *paging.Page {
+	content := make([]interface{}, len({{.FirstLetter}}))
+	for i, v := range {{.FirstLetter}} {
+		content[i] = v
+	}
+
+	return paging.NewPage(paginator, content)
 }

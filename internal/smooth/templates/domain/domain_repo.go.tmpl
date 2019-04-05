@@ -6,6 +6,7 @@ import (
 	"github.com/gobuffalo/pop"
 	"github.com/gobuffalo/uuid"
 	"github.com/pkg/errors"
+	"github.com/pkgmain/smooth/paging"
 )
 
 func Create({{.Singular}} *{{.Capitalized}}, tx *pop.Connection) error {
@@ -20,6 +21,18 @@ func FindOne(id uuid.UUID, tx *pop.Connection) (*{{.Capitalized}}, error) {
 	}
 
 	return {{.Singular}}, nil
+}
+
+func FindPage(p *paging.Params, tx *pop.Connection) (*paging.Page, error) {
+	{{.Plural}} := new({{.CapitalizedPlural}})
+
+	q := tx.PaginateFromParams(p)
+	err := q.All({{.Plural}})
+	if err != nil {
+		return nil, err
+	}
+
+	return {{.Plural}}.ToPage(q.Paginator), nil
 }
 
 func FindAll(tx *pop.Connection) ([]{{.Capitalized}}, error) {

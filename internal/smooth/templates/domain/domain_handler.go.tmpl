@@ -5,6 +5,7 @@ import (
 
 	"github.com/go-chi/render"
 	"github.com/pkgmain/smooth"
+	"github.com/pkgmain/smooth/paging"
 )
 
 func Post(w http.ResponseWriter, r *http.Request) {
@@ -25,13 +26,29 @@ func Post(w http.ResponseWriter, r *http.Request) {
 }
 
 func Get(w http.ResponseWriter, r *http.Request) {
-	hasID := smooth.HasParam(r, "id")
-	if hasID {
-		getOne(w, r)
+	page, err := FindPage(paging.NewParams(r), smooth.GetTX(r))
+	if err != nil {
+		smooth.RenderJSONError(w, r, err)
 		return
 	}
 
-	getAll(w, r)
+	smooth.RenderJSON(w, r, page)
+}
+
+func GetOne(w http.ResponseWriter, r *http.Request) {
+	id, errs := smooth.GetUUIDFromPath(r, "id")
+	if errs != nil && errs.HasAny() {
+		smooth.RenderBadRequest(w, r, errs)
+		return
+	}
+
+	{{.FirstLetter}}, err := FindOne(id, smooth.GetTX(r))
+	if err != nil {
+		smooth.RenderJSONError(w, r, err)
+		return
+	}
+
+	smooth.RenderJSON(w, r, {{.FirstLetter}})
 }
 
 func Put(w http.ResponseWriter, r *http.Request) {
@@ -65,31 +82,4 @@ func Delete(w http.ResponseWriter, r *http.Request) {
 	}
 
 	render.Status(r, http.StatusNoContent)
-}
-
-func getOne(w http.ResponseWriter, r *http.Request) {
-	id, errs := smooth.GetUUIDFromPath(r, "id")
-	if errs != nil && errs.HasAny() {
-		smooth.RenderBadRequest(w, r, errs)
-		return
-	}
-
-	u, err := FindOne(id, smooth.GetTX(r))
-	if err != nil {
-		smooth.RenderJSONError(w, r, err)
-		return
-	}
-
-	smooth.RenderJSON(w, r, u)
-}
-
-func getAll(w http.ResponseWriter, r *http.Request) {
-	tx := smooth.GetTX(r)
-	{{.Plural}}, err := FindAll(tx)
-	if err != nil {
-		smooth.RenderJSONError(w, r, err)
-		return
-	}
-
-	smooth.RenderJSON(w, r, {{.Plural}})
 }
