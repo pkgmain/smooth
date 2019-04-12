@@ -21,6 +21,10 @@ func NewPackdWalkable(fs http.FileSystem) *PackdWalkable {
 
 func (p PackdWalkable) Walk(wf packd.WalkFunc) error {
 	return vfsutil.Walk(p.fs, "/", func(path string, info os.FileInfo, err error) error {
+		if info.IsDir() {
+			return nil
+		}
+		
 		f, err := p.fs.Open(path)
 		if err != nil {
 			return errors.WithStack(err)
