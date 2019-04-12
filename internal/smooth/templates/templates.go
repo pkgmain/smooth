@@ -60,7 +60,7 @@ func GenerateMigrationFiles(model DomainModel) error {
 		now := time.Now()
 		timestamp := now.Format("20060102150405")
 		path = fmt.Sprintf("%s_%s.%s", timestamp, model.Singular, path)
-		path = filepath.Join("migrations", path)
+		path = filepath.Join("resources", "migrations", path)
 		return Write(file.String(), path, model)
 	})
 }

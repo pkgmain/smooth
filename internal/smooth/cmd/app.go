@@ -28,7 +28,7 @@ var appCmd = &cobra.Command{
 		// write files and folders
 		m := templates.AppModel{App: app, Module: module}
 		writeFilesFromTemplates(m)
-		err := os.Mkdir(filepath.Join(app, "migrations"), os.ModePerm)
+		err := os.Mkdir(filepath.Join(app, "resources", "migrations"), os.ModePerm)
 		if err != nil {
 			return err
 		}
@@ -41,8 +41,15 @@ var appCmd = &cobra.Command{
 		}
 
 		// run go get
-		log.Info().Msg("running: go get")
-		err = execCommand(app, "go", "get")
+		log.Info().Msg("running: go get -tags=dev")
+		err = execCommand(app, "go", "get", "-tags=dev")
+		if err != nil {
+			return err
+		}
+
+		// run go generate
+		log.Info().Msg("running: go generate")
+		err = execCommand(app, "go", "generate")
 		if err != nil {
 			return err
 		}
@@ -89,7 +96,7 @@ func execCommand(workingDir, name string, args ...string) error {
 
 	err := cmd.Run()
 	if err != nil {
-		return err
+		return errors.WithStack(err)
 	}
 
 	return nil

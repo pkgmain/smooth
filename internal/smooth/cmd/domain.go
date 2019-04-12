@@ -48,6 +48,13 @@ func createDomain(domain string) error {
 		log.Fatal().Msgf("%+v", err)
 	}
 
+	// run go generate
+	log.Info().Msg("running: go generate")
+	err = execCommand(".", "go", "generate")
+	if err != nil {
+		return err
+	}
+
 	log.Info().Msg("Finished scaffolding domain!")
 	return nil
 }

@@ -1,0 +1,20 @@
+//+build dev
+
+package resources
+
+import (
+	"net/http"
+	"path/filepath"
+
+	"github.com/rs/zerolog/log"
+)
+
+var VFS http.FileSystem
+
+func init() {
+	path, err := filepath.Abs("resources")
+	if err != nil {
+		log.Fatal().Msgf("%+v", err)
+	}
+	VFS = http.Dir(path)
+}

@@ -1,0 +1,31 @@
+//+build ignore
+
+package main
+
+import (
+	"os"
+	"path/filepath"
+
+	"github.com/pkg/errors"
+	"github.com/rs/zerolog/log"
+	"github.com/shurcooL/httpfs/filter"
+	"github.com/shurcooL/vfsgen"
+
+	"{{.Module}}/resources"
+)
+
+func main() {
+	filtered := filter.Skip(resources.VFS, func(path string, fi os.FileInfo) bool {
+		return filepath.Ext(path) == ".go"
+	})
+
+	err := vfsgen.Generate(filtered, vfsgen.Options{
+		PackageName:  "resources",
+		Filename:     "resources/resources_vfs_gen.go",
+		BuildTags:    "!dev",
+		VariableName: "VFS",
+	})
+	if err != nil {
+		log.Fatal().Msgf("%+v", errors.WithStack(err))
+	}
+}

@@ -24,7 +24,7 @@ func (p PackdWalkable) Walk(wf packd.WalkFunc) error {
 		if info.IsDir() {
 			return nil
 		}
-		
+
 		f, err := p.fs.Open(path)
 		if err != nil {
 			return errors.WithStack(err)

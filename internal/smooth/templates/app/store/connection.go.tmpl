@@ -2,14 +2,14 @@ package store
 
 import (
 	"{{.Module}}/config"
+	"{{.Module}}/resources"
 
 	"github.com/gobuffalo/pop"
+	"github.com/pkg/errors"
 	"github.com/pkgmain/smooth"
 )
 
-var (
-	db *pop.Connection
-)
+var db *pop.Connection
 
 // DB returns an existing *pop.Connection. If a connection has not yet been made,
 // a new one will be established.
@@ -30,7 +30,16 @@ func connect() error {
 	pop.SetLogger(smooth.ZeroPopLogger)
 	pop.Debug = config.IsDev()
 
-	var err error
+	cfg, err := resources.VFS.Open("database.yml")
+	if err != nil {
+		return errors.WithStack(err)
+	}
+
+	err = pop.LoadFrom(cfg)
+	if err != nil {
+		return err
+	}
+
 	db, err = pop.Connect(config.Env)
 	if err != nil {
 		return err
