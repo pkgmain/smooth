@@ -11,7 +11,7 @@ type PopMigrator struct {
 	box pop.MigrationBox
 }
 
-func NewMigrator(conn *pop.Connection, fs http.FileSystem) (m PopMigrator, _ error) {
+func NewPopMigrator(conn *pop.Connection, fs http.FileSystem) (m PopMigrator, _ error) {
 	walkable := NewPackdWalkable(fs)
 	box, err := pop.NewMigrationBox(walkable, conn)
 	if err != nil {
