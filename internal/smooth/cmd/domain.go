@@ -40,12 +40,12 @@ func createDomain(domain string) error {
 	}
 	err := templates.GenerateDomainFiles(m)
 	if err != nil {
-		log.Fatal().Msgf("%+v", err)
+		return err
 	}
 
 	err = templates.GenerateMigrationFiles(m)
 	if err != nil {
-		log.Fatal().Msgf("%+v", err)
+		return err
 	}
 
 	// run go generate

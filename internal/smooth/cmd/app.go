@@ -27,10 +27,14 @@ var appCmd = &cobra.Command{
 
 		// write files and folders
 		m := templates.AppModel{App: app, Module: module}
-		writeFilesFromTemplates(m)
-		err := os.Mkdir(filepath.Join(app, "resources", "migrations"), os.ModePerm)
+		err := writeFilesFromTemplates(m)
 		if err != nil {
 			return err
+		}
+
+		err = os.Mkdir(filepath.Join(app, "resources", "migrations"), os.ModePerm)
+		if err != nil {
+			return errors.WithStack(err)
 		}
 
 		// run go mod init
@@ -56,7 +60,7 @@ var appCmd = &cobra.Command{
 
 		absPath, err := filepath.Abs(app)
 		if err != nil {
-			return err
+			return errors.WithStack(err)
 		}
 
 		log.Info().Msgf("Finished scaffolding! Your application is now available in %s", absPath)
@@ -69,12 +73,14 @@ func init() {
 	newCmd.AddCommand(appCmd)
 }
 
-func writeFilesFromTemplates(m templates.AppModel) {
+func writeFilesFromTemplates(m templates.AppModel) error {
 	err := templates.GenerateAppFiles(m)
 
 	if err != nil {
-		log.Fatal().Msgf("%+v", errors.WithStack(err))
+		return err
 	}
+
+	return nil
 }
 
 func getModule(args []string) string {
