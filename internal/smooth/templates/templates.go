@@ -10,15 +10,10 @@ import (
 	"text/template"
 	"time"
 
-	"github.com/gobuffalo/packd"
-	"github.com/gobuffalo/packr/v2"
 	"github.com/pkg/errors"
 	"github.com/rs/zerolog/log"
+	"github.com/shurcooL/httpfs/vfsutil"
 )
-
-var appTemplates *packr.Box
-var domainTemplates *packr.Box
-var migrationTemplates *packr.Box
 
 type AppModel struct {
 	App    string
@@ -33,35 +28,59 @@ type DomainModel struct {
 	FirstLetter       string
 }
 
-func init() {
-	appTemplates = packr.New("appTemplates", "./app")
-	domainTemplates = packr.New("domainTemplates", "./domain")
-	migrationTemplates = packr.New("migrationTemplates", "./migration")
-}
-
 func GenerateAppFiles(model AppModel) error {
-	return appTemplates.Walk(func(path string, file packd.File) error {
+	return vfsutil.Walk(VFS, "/app", func(path string, info os.FileInfo, err error) error {
+		if info.IsDir() {
+			return nil
+		}
+
+		content, err := vfsutil.ReadFile(VFS, path)
+		if err != nil {
+			return errors.WithStack(err)
+		}
+
+		path = strings.Replace(path, "/app", model.App, 1)
 		path = strings.Replace(path, filepath.Ext(path), "", 1)
-		return Write(file.String(), filepath.Join(model.App, path), model)
+		return Write(string(content), path, model)
 	})
 }
 
 func GenerateDomainFiles(model DomainModel) error {
-	return domainTemplates.Walk(func(path string, file packd.File) error {
+	return vfsutil.Walk(VFS, "/domain", func(path string, info os.FileInfo, err error) error {
+		if info.IsDir() {
+			return nil
+		}
+
+		content, err := vfsutil.ReadFile(VFS, path)
+		if err != nil {
+			return errors.WithStack(err)
+		}
+
+		path = strings.Replace(path, "/domain", "", 1)
 		path = strings.Replace(path, filepath.Ext(path), "", 1)
 		path = strings.Replace(path, "domain", model.Singular, 1)
-		return Write(file.String(), filepath.Join(model.Singular, path), model)
+		return Write(string(content), filepath.Join(model.Singular, path), model)
 	})
 }
 
 func GenerateMigrationFiles(model DomainModel) error {
-	return migrationTemplates.Walk(func(path string, file packd.File) error {
+	return vfsutil.Walk(VFS, "/migration", func(path string, info os.FileInfo, err error) error {
+		if info.IsDir() {
+			return nil
+		}
+
+		content, err := vfsutil.ReadFile(VFS, path)
+		if err != nil {
+			return errors.WithStack(err)
+		}
+
+		path = strings.Replace(path, "/migration/", "", 1)
 		path = strings.Replace(path, filepath.Ext(path), "", 1)
 		now := time.Now()
 		timestamp := now.Format("20060102150405")
 		path = fmt.Sprintf("%s_%s.%s", timestamp, model.Singular, path)
 		path = filepath.Join("resources", "migrations", path)
-		return Write(file.String(), path, model)
+		return Write(string(content), path, model)
 	})
 }
 

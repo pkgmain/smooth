@@ -13,6 +13,6 @@ import (
 func main() {
 	err := smooth.GenerateResources(resources.VFS, smooth.DefaultVFSGenOptions)
 	if err != nil {
-		log.Fatal().Msgf("%+v", err)
+		log.Fatal().Msgf("%+v", errors.WithStack(err))
 	}
 }
