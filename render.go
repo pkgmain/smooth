@@ -5,6 +5,8 @@ import (
 	"net/http"
 
 	"github.com/go-chi/render"
+	"github.com/gobuffalo/packr/v2"
+	"github.com/gobuffalo/plush"
 	"github.com/gobuffalo/validate"
 	"github.com/pkg/errors"
 	"github.com/rs/zerolog/log"
@@ -58,4 +60,24 @@ func RenderJSONErrorWithStatus(w http.ResponseWriter, r *http.Request, status in
 
 	render.Status(r, status)
 	render.JSON(w, r, errors.Cause(err).Error())
+}
+
+func RenderHTML(w http.ResponseWriter, r *http.Request, box *packr.Box, template string, data map[string]interface{}) {
+	t, err := box.FindString(template)
+	if err != nil {
+		//todo: do something better like render and error page
+		log.Error().Msgf("%+v", err)
+		return
+	}
+
+	c := plush.NewContextWith(data)
+	html, err := plush.Render(t, c)
+	if err != nil {
+		//todo: do something better like render and error page
+		log.Error().Msgf("%+v", err)
+		return
+	}
+
+	render.Status(r, http.StatusOK)
+	render.HTML(w, r, html)
 }
