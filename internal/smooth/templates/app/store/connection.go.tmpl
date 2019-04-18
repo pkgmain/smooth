@@ -1,11 +1,11 @@
 package store
 
 import (
-	"{{.Module}}/config"
-	"{{.Module}}/resources"
-
 	"github.com/gobuffalo/pop"
 	"github.com/pkgmain/smooth"
+
+	"{{.Module}}/config"
+	"{{.Module}}/resources"
 )
 
 var db *pop.Connection
@@ -29,8 +29,17 @@ func connect() error {
 	pop.SetLogger(smooth.ZeroPopLogger)
 	pop.Debug = config.IsDev()
 
-	var err error
-	db, err = smooth.PopConnect(resources.VFS, config.Env)
+	f, err := resources.Config.Open("database.yml")
+	if err != nil {
+		return err
+	}
+
+	err = pop.LoadFrom(f)
+	if err != nil {
+		return err
+	}
+
+	db, err = pop.Connect(config.Env)
 	if err != nil {
 		return err
 	}

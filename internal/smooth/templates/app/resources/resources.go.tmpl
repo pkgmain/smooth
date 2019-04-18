@@ -1,20 +1,11 @@
-//+build dev
-
 package resources
 
 import (
-	"net/http"
-	"path/filepath"
-
-	"github.com/rs/zerolog/log"
+	"github.com/gobuffalo/packr/v2"
 )
 
-var VFS http.FileSystem
-
-func init() {
-	path, err := filepath.Abs("resources")
-	if err != nil {
-		log.Fatal().Msgf("%+v", err)
-	}
-	VFS = http.Dir(path)
-}
+var (
+	Config     = packr.New("config", "./config")
+	Migrations = packr.New("migrations", "./migrations")
+	Templates  = packr.New("templates", "./templates")
+)

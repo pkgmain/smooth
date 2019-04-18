@@ -1,10 +1,8 @@
 package cmd
 
 import (
-	"github.com/pkgmain/smooth"
 	"github.com/spf13/cobra"
 
-	"{{.Module}}/resources"
 	"{{.Module}}/store"
 )
 
@@ -38,7 +36,7 @@ func migrateUp(cmd *cobra.Command, args []string) error {
 		return err
 	}
 
-	m, err := smooth.NewPopMigrator(db, resources.VFS)
+	m, err := store.NewMigrator(db)
 	if err != nil {
 		return err
 	}
@@ -52,7 +50,7 @@ func migrateDown(cmd *cobra.Command, args []string) error {
 		return err
 	}
 
-	m, err := smooth.NewPopMigrator(db, resources.VFS)
+	m, err := store.NewMigrator(db)
 	if err != nil {
 		return err
 	}

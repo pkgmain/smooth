@@ -3,7 +3,6 @@ package store
 import (
 	"github.com/gobuffalo/pop"
 	"github.com/pkg/errors"
-	"github.com/pkgmain/smooth"
 
 	"{{.Module}}/resources"
 )
@@ -12,14 +11,13 @@ type PopMigrator struct {
 	box pop.MigrationBox
 }
 
-func NewMigrator(conn *pop.Connection) (m PopMigrator, _ error) {
-	walkable := smooth.NewPackdWalkable(resources.VFS)
-	box, err := pop.NewMigrationBox(walkable, conn)
+func NewMigrator(conn *pop.Connection) (*PopMigrator, error) {
+	box, err := pop.NewMigrationBox(resources.Migrations, conn)
 	if err != nil {
-		return m, err
+		return nil, err
 	}
 
-	return PopMigrator{box}, nil
+	return &PopMigrator{box}, nil
 }
 
 func (m PopMigrator) Up() error {
