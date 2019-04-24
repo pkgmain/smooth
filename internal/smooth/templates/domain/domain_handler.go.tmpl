@@ -3,7 +3,6 @@ package {{.Singular}}
 import (
 	"net/http"
 
-	"github.com/go-chi/render"
 	"github.com/pkgmain/smooth"
 	"github.com/pkgmain/smooth/paging"
 )
@@ -81,5 +80,5 @@ func Delete(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	render.Status(r, http.StatusNoContent)
+	smooth.RenderNoContent(w, r)
 }

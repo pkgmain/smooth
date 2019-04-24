@@ -9,9 +9,9 @@ require (
 	github.com/go-chi/render v1.0.1
 	github.com/gobuffalo/fizz v1.7.0 // indirect
 	github.com/gobuffalo/makr v1.1.5 // indirect
-	github.com/gobuffalo/packd v0.0.0-20190315124812-a385830c7fc0
 	github.com/gobuffalo/packr v1.25.0 // indirect
 	github.com/gobuffalo/packr/v2 v2.2.0
+	github.com/gobuffalo/plush v3.7.33+incompatible
 	github.com/gobuffalo/pop v4.8.8+incompatible
 	github.com/gobuffalo/tags v2.0.16+incompatible // indirect
 	github.com/gobuffalo/uuid v2.0.5+incompatible

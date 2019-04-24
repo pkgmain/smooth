@@ -5,12 +5,15 @@ import (
 	"net/http"
 
 	"github.com/go-chi/render"
-	"github.com/gobuffalo/packr/v2"
 	"github.com/gobuffalo/plush"
 	"github.com/gobuffalo/validate"
 	"github.com/pkg/errors"
 	"github.com/rs/zerolog/log"
 )
+
+func RenderNoContent(w http.ResponseWriter, r *http.Request) {
+	render.NoContent(w, r)
+}
 
 // RenderJSON renders v as JSON with a status code of http.StatusOK.
 func RenderJSON(w http.ResponseWriter, r *http.Request, v interface{}) {
@@ -62,8 +65,8 @@ func RenderJSONErrorWithStatus(w http.ResponseWriter, r *http.Request, status in
 	render.JSON(w, r, errors.Cause(err).Error())
 }
 
-func RenderHTML(w http.ResponseWriter, r *http.Request, box *packr.Box, template string, data map[string]interface{}) {
-	t, err := box.FindString(template)
+func RenderHTML(w http.ResponseWriter, r *http.Request, template string, data map[string]interface{}) {
+	t, err := templates.FindString(template)
 	if err != nil {
 		//todo: do something better like render and error page
 		log.Error().Msgf("%+v", err)
