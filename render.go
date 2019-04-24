@@ -65,12 +65,23 @@ func RenderJSONErrorWithStatus(w http.ResponseWriter, r *http.Request, status in
 	render.JSON(w, r, errors.Cause(err).Error())
 }
 
-func RenderHTML(w http.ResponseWriter, r *http.Request, template string, data map[string]interface{}) {
+// RenderHTML will find the template in the the templates *packr.Box and render
+// it with the given (optional) model. If multiple models are provided, they
+// will be merged.
+func RenderHTML(w http.ResponseWriter, r *http.Request, template string, model ...map[string]interface{}) {
 	t, err := templates.FindString(template)
 	if err != nil {
 		//todo: do something better like render and error page
 		log.Error().Msgf("%+v", err)
 		return
+	}
+
+	// Merge the models
+	data := make(map[string]interface{})
+	for _, m := range model {
+		for k, v := range m {
+			data[k] = v
+		}
 	}
 
 	c := plush.NewContextWith(data)
